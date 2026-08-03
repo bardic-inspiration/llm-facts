@@ -18,6 +18,8 @@ pytest
 - Branch off `main`. Name branches `type/short-description`
   (e.g. `feat/schema-models`, `fix/loader-line-numbers`).
 - One concern per branch and PR.
+- Keep up to date by **rebasing** onto `main`, never by merging it in —
+  history stays linear (see [commit standards](docs/commit-standards.md)).
 
 ## Workflow (TDD, required)
 
@@ -37,6 +39,8 @@ change per commit; imperative subject; the body says *why*.
   name the spec section, describe testing.
 - CI (lint + tests, Python 3.11/3.12) must be green.
 - Keep the diff scoped; unrelated cleanups go in their own PR.
+- Land with **"Rebase and merge"** — no merge commits, no squashing away the
+  atomic commits.
 
 ## Standards index
 
