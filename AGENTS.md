@@ -24,7 +24,8 @@ the relevant section before writing code.
 - **Locked tech choices.** `ruamel.yaml` (not `pyyaml` — need line/col), `resvg`
   (not `cairosvg`), Jinja2 templates (no arithmetic in the template), pydantic
   v2, click.
-- **Atomic, Conventional Commits.** One logical change per commit
+- **Atomic, Conventional Commits, linear history.** One logical change per
+  commit; no merge commits — rebase onto `main`, never merge it in
   ([`docs/commit-standards.md`](docs/commit-standards.md)).
 
 ## Package layout

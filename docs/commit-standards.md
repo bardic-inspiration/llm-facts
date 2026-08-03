@@ -39,6 +39,21 @@ Refs #3
 test(loader): pin line/col reporting for malformed yaml
 ```
 
+## History: no merge commits
+
+History stays linear — every commit is discrete and independently legible, which
+matters for agents reading `git log`. No merge commits, ever.
+
+- **Integrate `main` by rebasing, not merging:**
+  `git fetch origin && git rebase origin/main`. Same when updating a PR branch or
+  resolving conflicts — rebase, don't merge.
+- **Land PRs with "Rebase and merge."** It replays the branch's atomic commits
+  onto `main` and keeps them separate. Never "Create a merge commit"; never
+  "Squash and merge" (it fuses discrete commits into one).
+- **Keep a branch's commits clean:** amend or `git rebase -i` to fold
+  work-in-progress and "address review" fixups into the commit they belong to,
+  rather than stacking noise commits.
+
 ## TDD and commits
 
 TDD happens locally: write the failing test, then the code. Commit them together
