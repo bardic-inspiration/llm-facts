@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Build spec
+    url: https://github.com/bardic-inspiration/llm-facts/blob/main/docs/spec.md
+    about: Read the authoritative build spec before filing schema/layout questions.
+  - name: Contributing guide
+    url: https://github.com/bardic-inspiration/llm-facts/blob/main/CONTRIBUTING.md
+    about: Setup, TDD workflow, commit and PR standards.
