@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "llm-facts"
+version = "0.0.0"
+description = "Render a conformant .llm-facts.yml into a label (SVG/PNG/Markdown)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "reif" }]
+keywords = ["llm", "labeling", "svg", "cli", "github-action"]
+dependencies = [
+  "pydantic>=2",
+  "ruamel.yaml>=0.18",
+  "jinja2>=3.1",
+  "click>=8.1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8",
+  "ruff>=0.6",
+]
+
+# Enabled once llm_facts/cli.py exists (build order, spec §11 step 6):
+# [project.scripts]
+# llm-facts = "llm_facts.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/bardic-inspiration/llm-facts"
+Repository = "https://github.com/bardic-inspiration/llm-facts"
+
+[tool.hatch.build.targets.wheel]
+packages = ["llm_facts"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "W"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra"
+testpaths = ["tests"]
