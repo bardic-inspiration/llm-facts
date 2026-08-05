@@ -46,7 +46,8 @@ tests/              mirrors llm_facts/; fixtures under tests/fixtures/
 
 ## Build order
 
-Follow spec §11. Each step is test-first and lands as its own PR:
+Follow spec §11, phased in [`docs/roadmap.md`](docs/roadmap.md) (the schedule and
+current status). Each step is test-first and lands as its own PR:
 
 1. `schema.py` + `loader.py` + `validate` command — get validation solid first.
 2. `layout.py` slot/height logic against fixtures.

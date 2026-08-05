@@ -40,6 +40,7 @@ The build is test-first and lands in small, atomic steps — see
 | Doc | Purpose |
 |---|---|
 | [Build spec](docs/spec.md) | Authoritative source of truth for behavior |
+| [Roadmap](docs/roadmap.md) | Phased build plan and current status |
 | [Spec guidelines](docs/spec-guidelines.md) | How to read and change the spec |
 | [Testing standards](docs/testing-standards.md) | TDD workflow (required) |
 | [Commit standards](docs/commit-standards.md) | Atomic + Conventional Commits |
