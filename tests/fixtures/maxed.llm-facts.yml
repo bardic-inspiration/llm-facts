@@ -1,0 +1,90 @@
+# Maxed-out label: every cap exceeded so later phases exercise truncation and
+# the "+N more" rows (spec §5, §9):
+#   - models: 6 entries  (cap 5)
+#   - tools:  9 entries  (cap 8)
+#   - use:    7 entries  (cap 6)
+# Also a reference for two §3 rules: one model omits `tokens` (must stay absent,
+# never render as 0) and one `use.category` is outside the enum (accepted as-is).
+schema_version: 1
+
+serving:
+  scope: date-range
+  period_start: 2026-01-01
+  period_end: 2026-06-30
+
+summary:
+  total_sessions: 940
+  total_tokens: 31500000
+  ai_touched_files_pct: 88
+  ai_touched_lines_pct: 72
+
+models:
+  - name: Claude Opus 4.8
+    tokens: 12000000
+    sessions: 300
+    tool: Claude Code
+  - name: Claude Sonnet 4.5
+    tokens: 9000000
+    sessions: 260
+    tool: Claude Code
+  - name: Claude Haiku 4.5
+    tokens: 4500000
+    sessions: 180
+    tool: Claude Code
+  - name: GPT-5
+    tokens: 3000000
+    sessions: 120
+    tool: Copilot
+  - name: Gemini 2.5 Pro
+    tokens: 2000000
+    sessions: 60
+    tool: Gemini CLI
+  - name: Local model
+    # tokens intentionally omitted: must stay absent, never render as 0 (spec §3)
+    sessions: 20
+    tool: Ollama
+
+tools:
+  - name: Claude Code
+    verified: true
+  - name: GitHub Copilot
+    verified: true
+  - name: Cursor
+    verified: false
+  - name: Gemini CLI
+    verified: true
+  - name: Ollama
+    verified: false
+  - name: Aider
+    verified: true
+  - name: Windsurf
+    verified: false
+  - name: Cody
+    verified: true
+  - name: Continue
+    verified: false
+
+use:
+  - category: boilerplate
+    note: Scaffolded the package layout and CI configuration.
+  - category: refactor
+    note: Split the monolith into schema, loader, layout, and render modules.
+  - category: debugging
+    note: Traced and fixed the line/column reporting on malformed input.
+  - category: tests
+    note: Wrote the fixture-driven test suite for every phase.
+  - category: docs
+    note: Authored the spec, roadmap, and contributor guides.
+  - category: review
+    note: Second-passed each PR against the acceptance criteria.
+  - category: migration
+    note: Out-of-enum category, accepted as given and rendered as-is (spec §3).
+
+human:
+  reviewed_by_human: true
+  note: Fully reviewed by the maintainer; every section hand-checked.
+
+label:
+  verified: false
+  generated_by: llm-facts
+  generated_at: 2026-08-28T09:30:00Z
