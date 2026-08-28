@@ -1,0 +1,7 @@
+# Minimal label: the required schema_version plus a single small section.
+# Every other section is absent — later phases must omit those rows entirely,
+# never render them as zero or blank (spec §2).
+schema_version: 1
+
+serving:
+  scope: repository

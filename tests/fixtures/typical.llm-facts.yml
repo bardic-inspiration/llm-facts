@@ -1,0 +1,47 @@
+# Typical label: a realistic file exercising most sections, all within caps
+# (models ≤ 5, tools ≤ 8, use ≤ 6). This is the everyday reference input.
+schema_version: 1
+
+serving:
+  scope: repository
+  period_start: 2026-01-01
+  period_end: ongoing
+
+summary:
+  total_sessions: 128
+  total_tokens: 4200000
+  ai_touched_files_pct: 63
+  ai_touched_lines_pct: 41
+
+models:
+  - name: Claude Opus 4.8
+    tokens: 2600000
+    sessions: 74
+    tool: Claude Code
+  - name: Claude Sonnet 4.5
+    tokens: 1600000
+    sessions: 54
+    tool: Claude Code
+
+tools:
+  - name: Claude Code
+    verified: true
+  - name: GitHub Copilot
+    verified: false
+
+use:
+  - category: refactor
+    note: Extracted the layout engine into its own module.
+  - category: tests
+    note: Generated table-driven cases for the slot-height math.
+  - category: docs
+    note: Drafted the spec sections and the agent guide.
+
+human:
+  reviewed_by_human: true
+  note: Reviewed and edited by the maintainer before release.
+
+label:
+  verified: true
+  generated_by: llm-facts
+  generated_at: 2026-08-28T12:00:00Z
