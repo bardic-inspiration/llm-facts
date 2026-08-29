@@ -10,8 +10,19 @@ them:
 * #11 — the empty-models placeholder, end-to-end integration, and determinism.
 """
 
+from pathlib import Path
+
 from llm_facts import layout as L
 from llm_facts.layout import Layout, Slot
+from llm_facts.loader import load
+from llm_facts.schema import LlmFacts
+
+FIXTURES = Path(__file__).parent / "fixtures"
+
+
+def _fixture(name: str) -> LlmFacts:
+    return load(FIXTURES / f"{name}.llm-facts.yml").data
+
 
 # --- #8: text-wrap estimator ------------------------------------------------
 
@@ -126,3 +137,110 @@ def test_assemble_empty_input_is_an_empty_layout() -> None:
 def test_assemble_is_deterministic() -> None:
     sections = [Slot("a", height=10), Slot("b", height=20)]
     assert L.assemble(sections, width=420) == L.assemble(sections, width=420)
+
+
+# --- #9: fixed & simple data-driven section heights -------------------------
+
+
+def test_eyebrow_is_always_present_at_fixed_height() -> None:
+    # Eyebrow draws from schema_version (always present) + label.generated_by.
+    layout = L.layout(_fixture("minimal"))
+    eyebrow = layout.slot("eyebrow")
+    assert eyebrow is not None
+    assert eyebrow.height == L.EYEBROW_HEIGHT
+
+
+def test_title_is_always_present_at_fixed_height() -> None:
+    layout = L.layout(_fixture("minimal"))
+    title = layout.slot("title")
+    assert title is not None
+    assert title.height == L.TITLE_HEIGHT
+
+
+def test_footer_is_always_present_at_fixed_height() -> None:
+    layout = L.layout(_fixture("minimal"))
+    footer = layout.slot("footer")
+    assert footer is not None
+    assert footer.height == L.FOOTER_HEIGHT
+
+
+def test_note_line_is_always_present() -> None:
+    layout = L.layout(_fixture("minimal"))
+    note = layout.slot("note")
+    assert note is not None
+    assert note.height > 0
+
+
+def test_serving_present_when_serving_data_present() -> None:
+    # minimal has serving.scope only → one 16px row.
+    layout = L.layout(_fixture("minimal"))
+    serving = layout.slot("serving")
+    assert serving is not None
+    assert serving.height == L.SERVING_ROW  # single row
+
+
+def test_serving_two_rows_when_scope_and_period_present() -> None:
+    # typical has scope + a period → two rows, capped at 2.
+    layout = L.layout(_fixture("typical"))
+    serving = layout.slot("serving")
+    assert serving is not None
+    assert serving.height == L.SERVING_ROW * 2
+
+
+def test_serving_omitted_when_serving_absent() -> None:
+    data = LlmFacts.model_validate({"schema_version": 1})
+    assert L.layout(data).slot("serving") is None
+
+
+def test_big_metrics_one_row_for_up_to_four_keys() -> None:
+    # typical carries all four summary keys → a single 48px row.
+    layout = L.layout(_fixture("typical"))
+    metrics = layout.slot("metrics")
+    assert metrics is not None
+    assert metrics.height == L.METRICS_ONE_ROW
+
+
+def test_big_metrics_two_rows_when_more_than_four_keys() -> None:
+    data = LlmFacts.model_validate(
+        {
+            "schema_version": 1,
+            "summary": {
+                "total_sessions": 1,
+                "total_tokens": 1,
+                "ai_touched_files_pct": 1,
+                "ai_touched_lines_pct": 1,
+                "extra_metric": 1,  # a fifth present key (retained as extra)
+            },
+        }
+    )
+    metrics = L.layout(data).slot("metrics")
+    assert metrics is not None
+    assert metrics.height == L.METRICS_TWO_ROW
+
+
+def test_metrics_omitted_when_summary_absent() -> None:
+    assert L.layout(_fixture("minimal")).slot("metrics") is None
+
+
+def test_human_box_present_when_any_human_key_present() -> None:
+    layout = L.layout(_fixture("typical"))
+    human = layout.slot("human")
+    assert human is not None
+    assert human.height == L.HUMAN_HEIGHT
+
+
+def test_human_box_omitted_when_human_absent() -> None:
+    # This pins omission-vs-zero: no human key → no slot, not a zero-height blank.
+    assert L.layout(_fixture("minimal")).slot("human") is None
+
+
+def test_minimal_yields_only_the_sections_it_populates() -> None:
+    layout = L.layout(_fixture("minimal"))
+    populated = [s.kind for s in layout.slots if s.kind != "divider"]
+    # minimal has schema_version + serving.scope only.
+    assert populated == ["eyebrow", "title", "serving", "note", "footer"]
+
+
+def test_absent_section_produces_no_zero_height_slot() -> None:
+    layout = L.layout(_fixture("minimal"))
+    assert all(s.height > 0 for s in layout.slots)

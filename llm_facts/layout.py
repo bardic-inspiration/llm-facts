@@ -24,6 +24,8 @@ import math
 from dataclasses import dataclass, replace
 from typing import Any
 
+from llm_facts.schema import LlmFacts
+
 # --- Tunable geometry (spec §5) --------------------------------------------
 
 #: Default label width in px (spec §4 ``--width`` default).
@@ -42,6 +44,25 @@ HORIZONTAL_PADDING = 24
 #: Height of a rule divider interposed between two populated sections (spec §5
 #: "3–8px"). One medium weight is used uniformly for a deterministic stack.
 DIVIDER_HEIGHT = 4
+
+# Fixed and simple data-driven section heights (spec §5 slot table).
+EYEBROW_HEIGHT = 18
+TITLE_HEIGHT = 56
+SERVING_ROW = 16
+SERVING_MAX_ROWS = 2
+METRICS_ONE_ROW = 48
+METRICS_TWO_ROW = 90
+METRICS_WRAP_THRESHOLD = 4
+HUMAN_HEIGHT = 34
+NOTE_LINE_HEIGHT = 12
+FOOTER_HEIGHT = 22
+
+#: Static note-line disclaimer (spec §5). The yml path is appended per call so
+#: the reader knows where the authoritative data lives.
+NOTE_DISCLAIMER = "Formatting only — this label does not verify the underlying data."
+
+#: Default path shown in the note line and truncation rows.
+DEFAULT_SOURCE_PATH = ".llm-facts.yml"
 
 
 # --- Dataclasses ------------------------------------------------------------
@@ -136,3 +157,126 @@ def assemble(sections: list[Slot], width: int) -> Layout:
         placed.append(replace(section, y=y))
         y += section.height
     return Layout(slots=tuple(placed), total_height=y, width=width)
+
+
+# --- Fixed & simple data-driven sections (spec §5) --------------------------
+
+
+def verification_status(data: LlmFacts) -> str:
+    """Footer verification label from ``label.verified`` and the tools (spec §6).
+
+    ``label.verified: true`` with any ``tools[].verified: false`` reads as
+    ``"MIXED VERIFICATION"``; ``true`` with no dissent as ``"VERIFIED"``; an
+    absent or false ``label.verified`` as ``"UNVERIFIED"``. This computes the
+    footer text only — the ``--strict`` exit behavior lives in the CLI (spec §6).
+    """
+    label = data.label
+    if label is not None and label.verified is True:
+        tools = data.tools or []
+        if any(tool.verified is False for tool in tools):
+            return "MIXED VERIFICATION"
+        return "VERIFIED"
+    return "UNVERIFIED"
+
+
+def _eyebrow(data: LlmFacts) -> Slot:
+    generated_by = data.label.generated_by if data.label else None
+    content = {"generated_by": generated_by, "schema_version": data.schema_version}
+    return Slot("eyebrow", EYEBROW_HEIGHT, content=content)
+
+
+def _title(data: LlmFacts) -> Slot:
+    scope = data.serving.scope if data.serving else None
+    return Slot("title", TITLE_HEIGHT, content={"scope": scope})
+
+
+def _serving(data: LlmFacts) -> Slot | None:
+    serving = data.serving
+    if serving is None:
+        return None
+    rows = 0
+    if serving.scope is not None:
+        rows += 1
+    if serving.period_start is not None or serving.period_end is not None:
+        rows += 1
+    rows = max(1, min(SERVING_MAX_ROWS, rows))
+    content = {
+        "rows": rows,
+        "scope": serving.scope,
+        "period_start": serving.period_start,
+        "period_end": serving.period_end,
+    }
+    return Slot("serving", SERVING_ROW * rows, content=content)
+
+
+def _metrics(data: LlmFacts) -> Slot | None:
+    summary = data.summary
+    if summary is None:
+        return None
+    known = (
+        "total_sessions",
+        "total_tokens",
+        "ai_touched_files_pct",
+        "ai_touched_lines_pct",
+    )
+    keys = [name for name in known if getattr(summary, name) is not None]
+    count = len(keys) + len(summary.model_extra or {})
+    height = METRICS_TWO_ROW if count > METRICS_WRAP_THRESHOLD else METRICS_ONE_ROW
+    return Slot("metrics", height, content={"keys": keys, "count": count})
+
+
+def _human(data: LlmFacts) -> Slot | None:
+    human = data.human
+    if human is None:
+        return None
+    has_key = (
+        human.reviewed_by_human is not None
+        or human.note is not None
+        or bool(human.model_extra)
+    )
+    if not has_key:
+        return None
+    content = {"reviewed_by_human": human.reviewed_by_human, "note": human.note}
+    return Slot("human", HUMAN_HEIGHT, content=content)
+
+
+def _note(width: int, source_path: str) -> Slot:
+    text = f"{NOTE_DISCLAIMER} See {source_path}."
+    lines = wrap_lines(text, width)
+    content = {"text": text, "lines": lines, "source_path": source_path}
+    return Slot("note", NOTE_LINE_HEIGHT * lines, content=content)
+
+
+def _footer(data: LlmFacts) -> Slot:
+    generated_at = data.label.generated_at if data.label else None
+    verified = data.label.verified if data.label else None
+    content = {
+        "generated_at": generated_at,
+        "verified": verified,
+        "status": verification_status(data),
+    }
+    return Slot("footer", FOOTER_HEIGHT, content=content)
+
+
+# --- Public entry -----------------------------------------------------------
+
+
+def layout(
+    data: LlmFacts,
+    width: int = DEFAULT_WIDTH,
+    *,
+    source_path: str = DEFAULT_SOURCE_PATH,
+) -> Layout:
+    """Compute the full :class:`Layout` for a validated document (spec §5).
+
+    Builds every populated section top-to-bottom, skipping absent ones (an
+    absent section produces no slot — omission, never a zero-height blank), then
+    stacks them via :func:`assemble`.
+    """
+    sections: list[Slot] = [_eyebrow(data), _title(data)]
+    sections += [s for s in (_serving(data), _metrics(data)) if s is not None]
+    human = _human(data)
+    if human is not None:
+        sections.append(human)
+    sections += [_note(width, source_path), _footer(data)]
+    return assemble(sections, width)
