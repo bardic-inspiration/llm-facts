@@ -59,14 +59,45 @@ current status). Each step is test-first and lands as its own PR:
 
 ## Working loop
 
-1. Pick or open an issue (feature/task template).
+See [`docs/issue-standards.md`](docs/issue-standards.md) for the full
+contract on picking up, filing, and closing issues — including how to
+handle open questions or follow-on work that surfaces mid-issue. Summary:
+
+1. Pick or open an issue (feature/task template), scoped to one build-order
+   step. Implement only what its acceptance criteria require; resist
+   folding in adjacent fixes, refactors, or improvements you notice along
+   the way, even small ones — file those as separate issues instead
+   ([`docs/issue-standards.md`](docs/issue-standards.md)). Each cold start
+   has no memory of prior sessions, so this restraint is the only thing
+   standing between the build and scope drift across agents — don't rely on
+   a later session to notice and revert an out-of-scope change.
 2. Write failing tests from the spec + fixtures. Run them; watch them fail.
 3. Implement the smallest change to pass. Refactor with tests green.
 4. `ruff check . && ruff format . && pytest` before every commit.
 5. Atomic commits; open a PR with the template filled in.
 
+Changing only Markdown (`docs/spec.md`, `docs/**`, `AGENTS.md`, etc.) — no
+code? Steps 2–4 don't apply; use the leaner path in
+[`docs/docs-only-changes.md`](docs/docs-only-changes.md) instead.
+
+## When in doubt
+
+- The spec is authoritative. If it's ambiguous or looks wrong, **do not
+  silently invent behavior** — flag it in the issue/PR and, if it's a spec
+  defect, follow [`docs/spec-guidelines.md`](docs/spec-guidelines.md) to
+  amend the spec rather than diverging in code.
+- Stay in scope. Implement only what your issue's acceptance criteria call
+  for — nothing more. Spec §10 lists things that are explicitly out of
+  scope; do not scope-creep into them.
+- Anything else that comes up mid-issue — an edge case, a follow-on idea, a
+  question that isn't a spec defect — gets filed as its own issue per
+  [`docs/issue-standards.md`](docs/issue-standards.md), not solved inline.
+
 ## Docs map
 
-[Spec](docs/spec.md) · [Spec changes](docs/spec-guidelines.md) ·
+[Spec](docs/spec.md) · [Roadmap](docs/roadmap.md) ·
+[Issue standards](docs/issue-standards.md) ·
+[Spec changes](docs/spec-guidelines.md) ·
 [Testing](docs/testing-standards.md) · [Commits](docs/commit-standards.md) ·
-[Documentation](docs/documentation-standards.md).
+[Documentation](docs/documentation-standards.md) ·
+[Docs-only changes](docs/docs-only-changes.md).

@@ -26,3 +26,14 @@ labels: bug
 - llm-facts version / commit:
 - Python:
 - Output format (svg / png / md):
+
+## TL;DR
+
+<!--
+Required. Plain English, no software-expert jargon, bullet points — explain
+this like you're telling a friend who doesn't code. Cover:
+- Why: the reason this bug matters.
+- Impact: what changes once it's fixed.
+-->
+
+-

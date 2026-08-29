@@ -23,7 +23,9 @@ pytest
 
 ## Workflow (TDD, required)
 
-1. Open or claim an issue (feature/task template) tied to a spec section.
+1. Open or claim an issue (feature/task template) tied to a spec section. See
+   [issue standards](docs/issue-standards.md) for how to pick up, file, and
+   scope issues.
 2. Write failing tests first — see [testing standards](docs/testing-standards.md).
 3. Implement the minimum to pass; refactor with the suite green.
 4. `ruff check . && ruff format . && pytest` must pass locally.
@@ -42,8 +44,18 @@ change per commit; imperative subject; the body says *why*.
 - Land with **"Rebase and merge"** — no merge commits, no squashing away the
   atomic commits.
 
+## Docs-only changes
+
+A change touching only Markdown (no `llm_facts/`, `tests/`, `action/`, or
+CI/config files) skips TDD and the lint/test gate — CI detects this and
+skips those steps itself. See [docs-only changes](docs/docs-only-changes.md)
+for the full protocol, the lighter issue template, and the PR checklist to
+use instead.
+
 ## Standards index
 
+[Roadmap](docs/roadmap.md) · [Issue standards](docs/issue-standards.md) ·
 [Spec guidelines](docs/spec-guidelines.md) ·
 [Testing](docs/testing-standards.md) · [Commits](docs/commit-standards.md) ·
-[Documentation](docs/documentation-standards.md).
+[Documentation](docs/documentation-standards.md) ·
+[Docs-only changes](docs/docs-only-changes.md).
