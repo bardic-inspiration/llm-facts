@@ -1,5 +1,11 @@
 # llm-facts
 
+<!-- Demo: this label was rendered by the app itself from this repo's
+     .llm-facts.yml — `llm-facts render --format all`. -->
+<p align="center">
+  <img src=".github/llm-facts.png" alt="LLM Facts label for the llm-facts repository" width="420">
+</p>
+
 Render a conformant `.llm-facts.yml` into a label — SVG, PNG, or Markdown.
 Formatting only: the file in, a rendered label out. No telemetry collection, no
 log parsing, no data verification beyond internal consistency checks.
