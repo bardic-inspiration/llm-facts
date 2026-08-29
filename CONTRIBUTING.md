@@ -54,8 +54,9 @@ use instead.
 
 ## Standards index
 
-[Roadmap](docs/roadmap.md) · [Issue standards](docs/issue-standards.md) ·
+[Issue standards](docs/issue-standards.md) ·
 [Spec guidelines](docs/spec-guidelines.md) ·
 [Testing](docs/testing-standards.md) · [Commits](docs/commit-standards.md) ·
 [Documentation](docs/documentation-standards.md) ·
-[Docs-only changes](docs/docs-only-changes.md).
+[Docs-only changes](docs/docs-only-changes.md) ·
+[Roadmap (archived)](docs/archive/roadmap.md).

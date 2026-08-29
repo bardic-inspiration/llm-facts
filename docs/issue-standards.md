@@ -7,13 +7,14 @@ gets a paper trail instead of getting lost or silently folded in.
 
 ## Picking up an issue
 
-- Pick the **lowest-numbered open issue** in the active phase — see
-  [`roadmap.md`](roadmap.md) for current phase status and which deliverables
-  belong to it.
+- The phased build order that got the renderer to alpha is complete (see the
+  [archived roadmap](archive/roadmap.md)) — new issues aren't phase-labeled.
+  Pick the **lowest-numbered open issue** (`task` or `bug`).
 - Read the [`docs/spec.md`](spec.md) section it references before touching
-  code. The [Hard rules](../AGENTS.md#hard-rules) hold regardless of phase.
-- Scope work to **that issue only** — don't range ahead into a later phase and
-  don't pull in adjacent cleanup that isn't part of the acceptance criteria.
+  code. The [Hard rules](../AGENTS.md#hard-rules) apply regardless.
+- Scope work to **that issue only** — don't range ahead into unrelated spec
+  sections and don't pull in adjacent cleanup that isn't part of the
+  acceptance criteria.
 
 ## Filing an issue
 
