@@ -27,9 +27,8 @@ dev = [
   "ruff>=0.6",
 ]
 
-# Enabled once llm_facts/cli.py exists (build order, spec §11 step 6):
-# [project.scripts]
-# llm-facts = "llm_facts.cli:main"
+[project.scripts]
+llm-facts = "llm_facts.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/bardic-inspiration/llm-facts"
