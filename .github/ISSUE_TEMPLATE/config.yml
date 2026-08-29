@@ -6,3 +6,6 @@ contact_links:
   - name: Contributing guide
     url: https://github.com/bardic-inspiration/llm-facts/blob/main/CONTRIBUTING.md
     about: Setup, TDD workflow, commit and PR standards.
+  - name: Issue standards
+    url: https://github.com/bardic-inspiration/llm-facts/blob/main/docs/issue-standards.md
+    about: How to scope, label, and link an issue before filing it.
