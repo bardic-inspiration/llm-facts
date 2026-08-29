@@ -12,7 +12,7 @@ is done when every issue under its label is closed and its exit criteria hold.
 
 Status legend: `planned` · `in progress` · `done`.
 
-## Phase 1 — Validation foundation · `in progress`
+## Phase 1 — Validation foundation · `done`
 
 - **Goal:** load and validate a `.llm-facts.yml`; `llm-facts validate` works end
   to end.
@@ -23,13 +23,16 @@ Status legend: `planned` · `in progress` · `done`.
   minimal / typical / maxed fixtures; malformed YAML reports file/line/col;
   unknown fields warn (never error); full TDD coverage; CI green.
 
-## Phase 2 — Layout engine · `planned`
+## Phase 2 — Layout engine · `done`
 
 - **Goal:** deterministic slot and height computation from validated data.
 - **Spec:** §5 (layout → slot table), §11.2.
-- **Deliverables:** `layout.py` → `Layout(slots, total_height, width)`.
-- **Exit criteria:** layout tests assert slot presence, caps and "+N more"
-  truncation, height rules, and section-omission-vs-zero across the fixtures.
+- **Deliverables:** `layout.py` → `Layout(slots, total_height, width)`, built as
+  `Slot`/`Layout` dataclasses, a width-based wrap estimator, per-section height
+  rules, the capped "+N more" tables, and the empty-models placeholder.
+- **Exit criteria:** met — layout tests assert slot presence, caps and "+N more"
+  truncation, height rules, and section-omission-vs-zero across the fixtures,
+  plus determinism (equal `Layout`s across repeated calls and a re-parse).
 
 ## Phase 3 — SVG renderer · `planned`
 
