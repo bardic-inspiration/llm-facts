@@ -26,9 +26,13 @@ llm_facts/
     label.svg.jinja
     blank.llm-facts.yml
     fonts/             # bundled .ttf: Archivo, Archivo Narrow, JetBrains Mono
+action.yml             # Action metadata — at the repo root, not under action/:
+                       #   a Docker container action builds with action.yml's
+                       #   directory as the build context, so root placement lets
+                       #   the Dockerfile install the co-located llm_facts package
 action/
-  action.yml
-  Dockerfile           # python + resvg binary + fonts/
+  Dockerfile           # python + resvg (resvg-py) + fonts/, wraps the CLI
+  entrypoint.sh        # render + commit / drift-check (spec §8)
 ```
 
 ## 2. Schema (v1)
@@ -139,7 +143,7 @@ These check the label doesn't contradict itself — not whether the underlying d
 
 ## 8. GitHub Action
 
-Docker-based (not composite) — needs the `resvg` binary and bundled fonts, can't rely on runner preinstalls.
+Docker-based (not composite) — needs the `resvg` binary and bundled fonts, can't rely on runner preinstalls. `action.yml` sits at the repo root (see §1) so the container build context is the repo and the image can install the co-located package; `action/entrypoint.sh` runs the render, then either the commit or the drift-check below.
 
 Trigger: `push` on `paths: ['.llm-facts.yml']`, plus `workflow_dispatch`.
 
