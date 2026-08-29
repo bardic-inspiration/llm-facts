@@ -1,0 +1,53 @@
+# Docker-based GitHub Action wrapping the llm-facts CLI (spec §8, §11.7).
+#
+# This metadata lives at the repository root (not under action/) on purpose: a
+# Docker *container* action builds its image with the directory that holds
+# action.yml as the build context. Keeping it at the root lets action/Dockerfile
+# `pip install` the co-located llm_facts package — templates and fonts included —
+# without fetching the source over the network, so the image is self-contained
+# and works for private repositories too. The Dockerfile and entrypoint stay
+# under action/ per the spec §1 layout.
+#
+# Consume it with:  uses: bardic-inspiration/llm-facts@<ref>
+name: "LLM Facts label"
+description: "Render a conformant .llm-facts.yml into a label (SVG/PNG/Markdown)."
+author: "reif"
+
+branding:
+  icon: "tag"
+  color: "purple"
+
+inputs:
+  input:
+    description: "Path to the .llm-facts.yml to render."
+    required: false
+    default: ".llm-facts.yml"
+  output-dir:
+    description: "Directory the rendered label is written into."
+    required: false
+    default: ".github/"
+  format:
+    description: "Output format: svg, png, md, or all."
+    required: false
+    default: "png"
+  strict:
+    description: "Fail on a spec §6 self-contradiction instead of degrading."
+    required: false
+    default: "false"
+  commit:
+    description: >-
+      true: commit the regenerated label back to the branch.
+      false: re-render and fail the run if the committed label is stale
+      (leaving the fresh files in output-dir for an upload-artifact step).
+    required: false
+    default: "true"
+
+runs:
+  using: "docker"
+  image: "action/Dockerfile"
+  args:
+    - ${{ inputs.input }}
+    - ${{ inputs.output-dir }}
+    - ${{ inputs.format }}
+    - ${{ inputs.strict }}
+    - ${{ inputs.commit }}
