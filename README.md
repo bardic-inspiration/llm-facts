@@ -10,11 +10,12 @@ Render a conformant `.llm-facts.yml` into a label — SVG, PNG, or Markdown.
 Formatting only: the file in, a rendered label out. No telemetry collection, no
 log parsing, no data verification beyond internal consistency checks.
 
-> **Status: pre-alpha.** The repository foundation is in place; the renderer is
-> not built yet. See [`docs/spec.md`](docs/spec.md) for the build spec and
-> [`AGENTS.md`](AGENTS.md) for how it gets built.
+> **Status: alpha.** The renderer is built and working end to end — schema
+> validation, layout, SVG/PNG/Markdown rendering, the CLI, and the GitHub
+> Action. See [`docs/spec.md`](docs/spec.md) for the build spec and
+> [`AGENTS.md`](AGENTS.md) for how it's built.
 
-## What it will do
+## What it does
 
 A Python CLI, wrapped by a Docker-based GitHub Action:
 
@@ -29,7 +30,7 @@ branch.
 
 ## Develop
 
-Not published yet. For local work:
+Not published to PyPI yet. For local work:
 
 ```
 git clone https://github.com/bardic-inspiration/llm-facts
@@ -46,7 +47,7 @@ The build is test-first and lands in small, atomic steps — see
 | Doc | Purpose |
 |---|---|
 | [Build spec](docs/spec.md) | Authoritative source of truth for behavior |
-| [Roadmap](docs/roadmap.md) | Phased build plan and current status |
+| [Issue standards](docs/issue-standards.md) | How to pick up, file, and scope issues |
 | [Spec guidelines](docs/spec-guidelines.md) | How to read and change the spec |
 | [Testing standards](docs/testing-standards.md) | TDD workflow (required) |
 | [Commit standards](docs/commit-standards.md) | Atomic + Conventional Commits |

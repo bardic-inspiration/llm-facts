@@ -46,8 +46,11 @@ tests/              mirrors llm_facts/; fixtures under tests/fixtures/
 
 ## Build order
 
-Follow spec §11, phased in [`docs/roadmap.md`](docs/roadmap.md) (the schedule and
-current status). Each step is test-first and lands as its own PR:
+The renderer is built and working — all six phases below are done (see the
+[archived roadmap](docs/archive/roadmap.md) for how the build got there).
+New work is regular issues against the spec, not phase-ordered; see
+[`docs/issue-standards.md`](docs/issue-standards.md). The steps, for
+reference:
 
 1. `schema.py` + `loader.py` + `validate` command — get validation solid first.
 2. `layout.py` slot/height logic against fixtures.
@@ -95,9 +98,9 @@ code? Steps 2–4 don't apply; use the leaner path in
 
 ## Docs map
 
-[Spec](docs/spec.md) · [Roadmap](docs/roadmap.md) ·
-[Issue standards](docs/issue-standards.md) ·
+[Spec](docs/spec.md) · [Issue standards](docs/issue-standards.md) ·
 [Spec changes](docs/spec-guidelines.md) ·
 [Testing](docs/testing-standards.md) · [Commits](docs/commit-standards.md) ·
 [Documentation](docs/documentation-standards.md) ·
-[Docs-only changes](docs/docs-only-changes.md).
+[Docs-only changes](docs/docs-only-changes.md) ·
+[Roadmap (archived)](docs/archive/roadmap.md).

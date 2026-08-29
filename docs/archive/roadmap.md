@@ -1,14 +1,22 @@
-# Roadmap
+# Roadmap (archived)
 
-The phased view of the [build spec §11](spec.md). Each phase is a slice of the
-renderer that lands as a small set of atomic, test-first PRs. Phases are
-sequential — each builds on the one before.
+> **Archived.** This was the preliminary, phase-by-phase build plan for
+> reaching the working alpha. All six phases are done — the plan it describes
+> is complete, so it's kept here as a historical record, not a live-status
+> doc. For current behavior see [the spec](../spec.md); for how to pick up
+> new work see [issue standards](../issue-standards.md).
 
-**How this drives the build:** each phase's work is tracked as GitHub issues
-(the [feature/task template](../.github/ISSUE_TEMPLATE/feature_task.md)), labeled
-`phase:N`. Scheduled agents pull the lowest open issue in the active phase, follow
-the [working loop](../AGENTS.md#working-loop), and open one PR per issue. A phase
-is done when every issue under its label is closed and its exit criteria hold.
+The phased view of the [build spec §11](../spec.md). Each phase is a slice of
+the renderer that landed as a small set of atomic, test-first PRs. Phases were
+sequential — each built on the one before.
+
+**How this drove the build:** each phase's work was tracked as GitHub issues
+(the [feature/task template](../../.github/ISSUE_TEMPLATE/feature_task.md)),
+labeled `phase:N`. Agents pulled the lowest open issue in the active phase,
+followed the [working loop](../../AGENTS.md#working-loop), and opened one PR
+per issue. A phase was done when every issue under its label was closed and
+its exit criteria held. New work no longer uses phase labels — see
+[issue standards](../issue-standards.md) for the current workflow.
 
 Status legend: `planned` · `in progress` · `done`.
 
@@ -34,25 +42,23 @@ Status legend: `planned` · `in progress` · `done`.
   truncation, height rules, and section-omission-vs-zero across the fixtures,
   plus determinism (equal `Layout`s across repeated calls and a re-parse).
 
-## Phase 3 — SVG renderer · `planned`
+## Phase 3 — SVG renderer · `done`
 
 - **Goal:** render a `Layout` to a deterministic SVG string.
 - **Spec:** §5 (template places pre-computed slots, no arithmetic), §7
   (determinism, system-font fallback), §11.3.
 - **Deliverables:** `templates/label.svg.jinja`, `render_svg.py`.
-- **Exit criteria:** byte-identical SVG for identical input; system-font stack in
-  SVG output; no arithmetic in the template.
+- **Exit criteria:** met — byte-identical SVG for identical input; system-font
+  stack in SVG output; no arithmetic in the template.
 
-## Phase 4 — Raster & Markdown outputs · `planned`
+## Phase 4 — Raster & Markdown outputs · `done`
 
 - **Goal:** PNG via resvg with embedded fonts; a plain Markdown table.
 - **Spec:** §7 (resvg, font embedding), §11.4–5.
 - **Deliverables:** `render_raster.py`, `render_md.py`, bundled fonts under
   `templates/fonts/`.
-- **Exit criteria:** PNG embeds the bundled `.ttf`s; Markdown table renders;
-  raster path is deterministic.
-- **De-risk first:** resvg and the fonts are free but not pre-provisioned — see
-  [Dependencies](#dependencies). Run the resvg spike before building on it.
+- **Exit criteria:** met — PNG embeds the bundled `.ttf`s; Markdown table
+  renders; raster path is deterministic.
 
 ## Phase 5 — CLI surface · `done`
 
@@ -77,15 +83,14 @@ Status legend: `planned` · `in progress` · `done`.
 
 ## Dependencies
 
-All tooling is free and open-source; two items need sourcing before Phase 4:
+All tooling was free and open-source; two items needed sourcing before Phase 4:
 
 - **Python deps** (pydantic, ruamel.yaml, jinja2, click, pytest, ruff) — pinned in
   `pyproject.toml`, installed in CI. No action needed.
-- **resvg** (Phase 4) — free (MPL/MIT), but a Rust binary/binding. Spike at
-  Phase 4 start: confirm a pip-installable binding or a pinned release binary runs
-  in CI *and* the Docker image before depending on it.
+- **resvg** (Phase 4) — free (MPL/MIT), a Rust binary/binding. Confirmed a
+  pip-installable binding (`resvg-py`, pinned in `pyproject.toml`) works in CI
+  and the Docker image.
 - **Fonts** (Phase 4) — Archivo, Archivo Narrow, JetBrains Mono, all SIL Open Font
-  License. Fetch and vendor the `.ttf`s into `templates/fonts/`; free to
-  redistribute.
+  License. Vendored as `.ttf`s under `templates/fonts/`; free to redistribute.
 - **Docker + Actions** (Phase 6) — GitHub-hosted runners build the Action free for
   this repo.
