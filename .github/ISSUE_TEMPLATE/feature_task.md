@@ -27,3 +27,14 @@ labels: task
 ## Out of scope
 
 <!-- What this task does NOT cover (see spec §10). -->
+
+## TL;DR
+
+<!--
+Required. Plain English, no software-expert jargon, bullet points — explain
+this like you're telling a friend who doesn't code. Cover:
+- Why: the reason this issue exists.
+- Impact: what changes once it's done.
+-->
+
+-
