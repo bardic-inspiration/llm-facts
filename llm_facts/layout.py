@@ -57,6 +57,21 @@ HUMAN_HEIGHT = 34
 NOTE_LINE_HEIGHT = 12
 FOOTER_HEIGHT = 22
 
+# Capped, list-driven sections (spec §5 caps, §9 visible "+N more" row). Each
+# section keeps up to its cap of rows; a cap exceeded appends a visible
+# truncation row, never a silent drop.
+MODEL_ROW = 22
+MODELS_CAP = 5
+MODELS_TRUNC = 16
+TOOL_ROW = 18
+TOOLS_CAP = 8
+TOOLS_TRUNC = 18
+USE_CAP = 6
+USE_ENTRY_MIN = 30
+USE_ENTRY_MAX = 48
+USE_LINE_STEP = 18
+USE_TRUNC = 30
+
 #: Static note-line disclaimer (spec §5). The yml path is appended per call so
 #: the reader knows where the authoritative data lives.
 NOTE_DISCLAIMER = "Formatting only — this label does not verify the underlying data."
@@ -258,6 +273,71 @@ def _footer(data: LlmFacts) -> Slot:
     return Slot("footer", FOOTER_HEIGHT, content=content)
 
 
+# --- Capped list sections (spec §5, §9) -------------------------------------
+
+
+def _more_label(more: int, source_path: str) -> str | None:
+    """The visible truncation row text, or ``None`` when nothing is truncated.
+
+    A cap exceeded is always shown — never a silent drop (spec §9).
+    """
+    if more <= 0:
+        return None
+    return f"+{more} more — see {source_path}"
+
+
+def _models(data: LlmFacts, source_path: str) -> Slot | None:
+    models = data.models
+    if not models:  # ``None`` (absent) or ``[]`` (present-but-empty) → no rows
+        return None
+    total = len(models)
+    shown = min(total, MODELS_CAP)
+    more = total - shown
+    height = MODEL_ROW * shown + (MODELS_TRUNC if more else 0)
+    content = {
+        "rows": list(models[:shown]),
+        "more": more,
+        "more_label": _more_label(more, source_path),
+        "placeholder": False,
+    }
+    return Slot("models", height, content=content)
+
+
+def _verification(data: LlmFacts, source_path: str) -> Slot | None:
+    tools = data.tools
+    if not tools:  # absent entirely → omit the verification section (spec §6)
+        return None
+    total = len(tools)
+    shown = min(total, TOOLS_CAP)
+    more = total - shown
+    height = TOOL_ROW * shown + (TOOLS_TRUNC if more else 0)
+    content = {
+        "rows": list(tools[:shown]),
+        "more": more,
+        "more_label": _more_label(more, source_path),
+    }
+    return Slot("verification", height, content=content)
+
+
+def _use(data: LlmFacts, width: int, source_path: str) -> Slot | None:
+    uses = data.use
+    if not uses:
+        return None
+    total = len(uses)
+    more = max(0, total - USE_CAP)
+    rows = []
+    height = 0
+    for entry in uses[:USE_CAP]:
+        lines = wrap_lines(entry.note or "", width)
+        entry_height = min(USE_ENTRY_MAX, USE_ENTRY_MIN + (lines - 1) * USE_LINE_STEP)
+        rows.append({"entry": entry, "lines": lines, "height": entry_height})
+        height += entry_height
+    if more:
+        height += USE_TRUNC
+    content = {"rows": rows, "more": more, "more_label": _more_label(more, source_path)}
+    return Slot("use", height, content=content)
+
+
 # --- Public entry -----------------------------------------------------------
 
 
@@ -273,10 +353,17 @@ def layout(
     absent section produces no slot — omission, never a zero-height blank), then
     stacks them via :func:`assemble`.
     """
-    sections: list[Slot] = [_eyebrow(data), _title(data)]
-    sections += [s for s in (_serving(data), _metrics(data)) if s is not None]
-    human = _human(data)
-    if human is not None:
-        sections.append(human)
-    sections += [_note(width, source_path), _footer(data)]
+    ordered = (
+        _eyebrow(data),
+        _title(data),
+        _serving(data),
+        _metrics(data),
+        _models(data, source_path),
+        _verification(data, source_path),
+        _use(data, width, source_path),
+        _human(data),
+        _note(width, source_path),
+        _footer(data),
+    )
+    sections = [slot for slot in ordered if slot is not None]
     return assemble(sections, width)
