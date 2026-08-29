@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="506" viewBox="0 0 420 506" role="img" aria-label="LLM Facts label">
+<style>text{font-family:system-ui, sans-serif;fill:#1b1f24}.bg{fill:#ffffff}.eyebrow{font-size:10px;fill:#6a737d;font-family:ui-monospace, monospace;letter-spacing:0.08em}.title{font-size:22px;font-weight:700;letter-spacing:0.04em}.subtitle{font-size:12px;fill:#57606a}.serving{font-size:11px;fill:#57606a}.metric-value{font-size:20px;font-weight:700}.metric-label{font-size:9px;fill:#6a737d}.row-name{font-size:12px}.row-meta{font-size:11px;fill:#57606a;font-family:ui-monospace, monospace}.more{font-size:10px;fill:#6a737d;font-style:italic}.muted{font-size:12px;fill:#6a737d;font-style:italic}.use-cat{font-size:11px;font-weight:700;fill:#24292f}.use-note{font-size:11px;fill:#57606a}.human-status{font-size:12px;font-weight:700}.human-note{font-size:11px;fill:#57606a}.note{font-size:9px;fill:#6a737d}.footer-status{font-size:11px;font-weight:700;font-family:ui-monospace, monospace}.footer-date{font-size:10px;fill:#6a737d;font-family:ui-monospace, monospace}.divider{stroke:#d0d7de;stroke-width:1}</style>
+<rect class="bg" x="0" y="0" width="420" height="506"/>
+<g class="slot slot-eyebrow">
+<text class="eyebrow" x="12" y="13">llm-facts · schema v1</text>
+</g>
+<g class="slot slot-divider">
+<line class="divider" x1="12" y1="20" x2="408" y2="20"/>
+</g>
+<g class="slot slot-title">
+<text class="title" x="12" y="52">LLM FACTS</text>
+<text class="subtitle" x="12" y="72">repository</text>
+</g>
+<g class="slot slot-divider">
+<line class="divider" x1="12" y1="80" x2="408" y2="80"/>
+</g>
+<g class="slot slot-serving">
+<text class="serving" x="12" y="94">Scope: repository</text>
+<text class="serving" x="12" y="110">Period: 2026-08-03 → ongoing</text>
+</g>
+<g class="slot slot-divider">
+<line class="divider" x1="12" y1="116" x2="408" y2="116"/>
+</g>
+<g class="slot slot-metrics">
+<text class="metric-value" x="52" y="148" text-anchor="middle">9</text>
+<text class="metric-label" x="52" y="164" text-anchor="middle">sessions</text>
+<text class="metric-value" x="157" y="148" text-anchor="middle">1,850,000</text>
+<text class="metric-label" x="157" y="164" text-anchor="middle">tokens</text>
+<text class="metric-value" x="262" y="148" text-anchor="middle">95%</text>
+<text class="metric-label" x="262" y="164" text-anchor="middle">files</text>
+<text class="metric-value" x="367" y="148" text-anchor="middle">88%</text>
+<text class="metric-label" x="367" y="164" text-anchor="middle">lines</text>
+</g>
+<g class="slot slot-divider">
+<line class="divider" x1="12" y1="168" x2="408" y2="168"/>
+</g>
+<g class="slot slot-models">
+<text class="row-name" x="12" y="185">Claude Opus 4.8</text>
+<text class="row-meta" x="408" y="185" text-anchor="end">1,620,000 tok · 8 sess · Claude Code</text>
+<text class="row-name" x="12" y="207">Claude Sonnet 5</text>
+<text class="row-meta" x="408" y="207" text-anchor="end">230,000 tok · 1 sess · Claude Code</text>
+</g>
+<g class="slot slot-divider">
+<line class="divider" x1="12" y1="216" x2="408" y2="216"/>
+</g>
+<g class="slot slot-verification">
+<text class="row-name" x="12" y="231">Claude Code</text>
+<text class="row-meta" x="408" y="231" text-anchor="end">unverified</text>
+</g>
+<g class="slot slot-divider">
+<line class="divider" x1="12" y1="238" x2="408" y2="238"/>
+</g>
+<g class="slot slot-use">
+<text class="use-cat" x="12" y="254">boilerplate</text>
+<text class="use-note" x="12" y="270">Scaffolded the package layout, pyproject, and Docker</text>
+<text class="use-cat" x="12" y="302">tests</text>
+<text class="use-note" x="12" y="318">Test-first fixtures for schema, loader, layout, and</text>
+<text class="use-cat" x="12" y="350">docs</text>
+<text class="use-note" x="12" y="366">Wrote the build spec, roadmap, and agent/contributor</text>
+<text class="use-cat" x="12" y="398">refactor</text>
+<text class="use-note" x="12" y="414">Split rendering into svg / raster / markdown modules.</text>
+</g>
+<g class="slot slot-divider">
+<line class="divider" x1="12" y1="416" x2="408" y2="416"/>
+</g>
+<g class="slot slot-human">
+<text class="human-status" x="12" y="432">Reviewed by a human</text>
+<text class="human-note" x="12" y="448">PRs reviewed and merged by the maintainer before landing on main.</text>
+</g>
+<g class="slot slot-divider">
+<line class="divider" x1="12" y1="454" x2="408" y2="454"/>
+</g>
+<g class="slot slot-note">
+<text class="note" x="12" y="466">Formatting only — this label does not verify the</text>
+<text class="note" x="12" y="478">underlying data. See .llm-facts.yml.</text>
+</g>
+<g class="slot slot-divider">
+<line class="divider" x1="12" y1="482" x2="408" y2="482"/>
+</g>
+<g class="slot slot-footer">
+<text class="footer-status" x="12" y="499">UNVERIFIED</text>
+<text class="footer-date" x="408" y="499" text-anchor="end">generated 2026-08-29T00:00:00+00:00</text>
+</g>
+</svg>

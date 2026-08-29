@@ -1,0 +1,50 @@
+# .llm-facts.yml — LLM Facts label source (schema v1).
+#
+# Formatting only: this file describes a label; it does not verify the data.
+# Numbers below are a demonstration for this repo (some figures are estimated).
+
+schema_version: 1
+
+serving:
+  scope: repository
+  period_start: 2026-08-03
+  period_end: ongoing
+
+summary:
+  total_sessions: 9
+  total_tokens: 1850000
+  ai_touched_files_pct: 95
+  ai_touched_lines_pct: 88
+
+models:
+  - name: Claude Opus 4.8
+    tokens: 1620000
+    sessions: 8
+    tool: Claude Code
+  - name: Claude Sonnet 5
+    tokens: 230000
+    sessions: 1
+    tool: Claude Code
+
+tools:
+  - name: Claude Code
+    verified: false
+
+use:
+  - category: boilerplate
+    note: Scaffolded the package layout, pyproject, and Docker Action.
+  - category: tests
+    note: Test-first fixtures for schema, loader, layout, and renderers.
+  - category: docs
+    note: Wrote the build spec, roadmap, and agent/contributor guides.
+  - category: refactor
+    note: Split rendering into svg / raster / markdown modules.
+
+human:
+  reviewed_by_human: true
+  note: PRs reviewed and merged by the maintainer before landing on main.
+
+label:
+  verified: false
+  generated_by: llm-facts
+  generated_at: 2026-08-29T00:00:00Z
