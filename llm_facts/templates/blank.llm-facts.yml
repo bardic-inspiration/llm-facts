@@ -1,0 +1,48 @@
+# .llm-facts.yml — LLM Facts label source (schema v1).
+#
+# Formatting only: this file describes a label; it does not verify the data.
+# Fill in the sections you have and delete the ones you don't. Every top-level
+# key except schema_version is optional — a missing section is omitted from the
+# label, never rendered as zero or blank.
+#
+# Then:
+#   llm-facts validate      # schema-check this file
+#   llm-facts render        # write llm-facts.png next to it
+#   llm-facts render --print  # print a text (Markdown) preview instead
+
+schema_version: 1
+
+# serving:
+#   scope: repository          # repository | release | date-range
+#   period_start: 2026-01-01
+#   period_end: ongoing        # a date, or "ongoing"
+
+# summary:
+#   total_sessions: 0
+#   total_tokens: 0
+#   ai_touched_files_pct: 0
+#   ai_touched_lines_pct: 0
+
+# models:
+#   - name: Claude Opus 4.8
+#     tokens: 0
+#     sessions: 0
+#     tool: Claude Code
+
+# tools:
+#   - name: Claude Code
+#     verified: false
+
+# use:
+#   # category: boilerplate | refactor | debugging | tests | docs | review | design | other
+#   - category: refactor
+#     note: What the assistance was used for.
+
+# human:
+#   reviewed_by_human: false
+#   note: Any human-review context.
+
+# label:
+#   verified: false
+#   generated_by: llm-facts
+#   generated_at: 2026-01-01T00:00:00Z
