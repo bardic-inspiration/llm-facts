@@ -54,23 +54,26 @@ Status legend: `planned` · `in progress` · `done`.
 - **De-risk first:** resvg and the fonts are free but not pre-provisioned — see
   [Dependencies](#dependencies). Run the resvg spike before building on it.
 
-## Phase 5 — CLI surface · `planned`
+## Phase 5 — CLI surface · `done`
 
 - **Goal:** the full click CLI — `init`, `render` with `--format/--out/--width/
   --strict/--print` — wired to the render pipeline.
 - **Spec:** §4 (CLI), §6 (`--strict`), §9 (failure modes), §11.6.
 - **Deliverables:** `cli.py`, `templates/blank.llm-facts.yml`; enable the
   `llm-facts` console script in `pyproject.toml`.
-- **Exit criteria:** every command works; `--strict` exits non-zero and writes
-  nothing on a §6 violation; a missing file suggests `init`.
+- **Exit criteria:** met — every command works; `--strict` exits non-zero and
+  writes nothing on a §6 violation; a missing file suggests `init`.
 
-## Phase 6 — GitHub Action · `planned`
+## Phase 6 — GitHub Action · `done`
 
 - **Goal:** a Docker-based Action wrapping the CLI.
 - **Spec:** §8, §11.7.
-- **Deliverables:** `action/Dockerfile`, `action/action.yml`.
-- **Exit criteria:** renders on push to `.llm-facts.yml`; `commit` and artifact
-  modes both work; verified in a scratch repo.
+- **Deliverables:** `action.yml` (repo root — see §1 for why), `action/Dockerfile`,
+  `action/entrypoint.sh`.
+- **Exit criteria:** met — `commit` (render → commit back) and artifact
+  (render → drift-check, fail if the committed label is stale) modes both work;
+  a missing input fails without fabricating a label. Wire it to `push` on
+  `.llm-facts.yml` in a consuming repo to render on change.
 
 ## Dependencies
 
