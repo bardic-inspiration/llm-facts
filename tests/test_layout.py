@@ -12,6 +12,8 @@ them:
 
 from pathlib import Path
 
+import pytest
+
 from llm_facts import layout as L
 from llm_facts.layout import Layout, Slot
 from llm_facts.loader import load
@@ -343,3 +345,118 @@ def test_typical_stays_within_every_cap_with_no_truncation_row() -> None:
         slot = layout.slot(kind)
         assert slot is not None
         assert slot.content["more"] == 0
+
+
+# --- #11: empty-models placeholder ------------------------------------------
+
+
+def test_empty_models_with_sessions_shows_one_placeholder_row() -> None:
+    # models present but empty AND total_sessions > 0 → exactly one
+    # "No model breakdown provided" row, not blank space (spec §5).
+    data = LlmFacts.model_validate(
+        {"schema_version": 1, "models": [], "summary": {"total_sessions": 12}}
+    )
+    models = L.layout(data).slot("models")
+    assert models is not None
+    assert models.content["placeholder"] is True
+    assert models.content["rows"] == []
+    assert models.height == L.MODEL_ROW
+    assert "No model breakdown provided" in models.content["text"]
+
+
+def test_absent_models_shows_no_models_section() -> None:
+    # models absent → no models section at all (omission-vs-zero, spec §5).
+    data = LlmFacts.model_validate(
+        {"schema_version": 1, "summary": {"total_sessions": 12}}
+    )
+    assert L.layout(data).slot("models") is None
+
+
+def test_empty_models_without_sessions_is_omitted() -> None:
+    # Present-but-empty with no qualifying session count → nothing to place.
+    data = LlmFacts.model_validate({"schema_version": 1, "models": []})
+    assert L.layout(data).slot("models") is None
+
+
+# --- #11: end-to-end integration across the fixtures ------------------------
+
+
+def _populated(layout: Layout) -> list[str]:
+    return [s.kind for s in layout.slots if s.kind != "divider"]
+
+
+def test_integration_minimal_slot_presence_and_omission() -> None:
+    layout = L.layout(_fixture("minimal"))
+    assert _populated(layout) == ["eyebrow", "title", "serving", "note", "footer"]
+    # Everything else is omitted, not zeroed.
+    for absent in ("metrics", "models", "verification", "use", "human"):
+        assert layout.slot(absent) is None
+
+
+def test_integration_typical_slots_heights_and_within_caps() -> None:
+    layout = L.layout(_fixture("typical"))
+    assert _populated(layout) == [
+        "eyebrow",
+        "title",
+        "serving",
+        "metrics",
+        "models",
+        "verification",
+        "use",
+        "human",
+        "note",
+        "footer",
+    ]
+    assert layout.slot("serving").height == L.SERVING_ROW * 2
+    assert layout.slot("metrics").height == L.METRICS_ONE_ROW
+    assert layout.slot("models").height == L.MODEL_ROW * 2
+    assert layout.slot("verification").height == L.TOOL_ROW * 2
+    assert layout.slot("human").height == L.HUMAN_HEIGHT
+    for kind in ("models", "verification", "use"):
+        assert layout.slot(kind).content["more"] == 0
+
+
+def test_integration_maxed_truncation_caps_and_more_counts() -> None:
+    layout = L.layout(_fixture("maxed"))
+    models = layout.slot("models")
+    ver = layout.slot("verification")
+    use = layout.slot("use")
+    # Every cap exceeded by exactly one; each shows a visible "+1 more" row.
+    assert len(models.content["rows"]) == L.MODELS_CAP
+    assert models.content["more"] == 1
+    assert models.height == L.MODEL_ROW * L.MODELS_CAP + L.MODELS_TRUNC
+    assert len(ver.content["rows"]) == L.TOOLS_CAP
+    assert ver.content["more"] == 1
+    assert ver.height == L.TOOL_ROW * L.TOOLS_CAP + L.TOOLS_TRUNC
+    assert len(use.content["rows"]) == L.USE_CAP
+    assert use.content["more"] == 1
+    for kind in ("models", "verification", "use"):
+        assert "+1 more" in layout.slot(kind).content["more_label"]
+
+
+@pytest.mark.parametrize("name", ["minimal", "typical", "maxed"])
+def test_integration_total_height_is_slots_plus_dividers(name: str) -> None:
+    layout = L.layout(_fixture(name))
+    # total_height is the sum of every slot height, dividers included...
+    assert layout.total_height == sum(s.height for s in layout.slots)
+    # ...and equivalently the populated slots plus one divider between each.
+    populated = [s for s in layout.slots if s.kind != "divider"]
+    dividers = [s for s in layout.slots if s.kind == "divider"]
+    assert len(dividers) == len(populated) - 1
+    expected = sum(s.height for s in populated) + len(dividers) * L.DIVIDER_HEIGHT
+    assert layout.total_height == expected
+
+
+# --- #11: determinism (spec §7) ---------------------------------------------
+
+
+@pytest.mark.parametrize("name", ["minimal", "typical", "maxed"])
+def test_layout_called_twice_is_equal(name: str) -> None:
+    data = _fixture(name)
+    assert L.layout(data) == L.layout(data)
+
+
+@pytest.mark.parametrize("name", ["minimal", "typical", "maxed"])
+def test_layout_is_stable_across_a_reparse(name: str) -> None:
+    # Two independent parses of the same fixture yield equal layouts (spec §7).
+    assert L.layout(_fixture(name)) == L.layout(_fixture(name))
