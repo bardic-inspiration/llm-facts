@@ -72,6 +72,10 @@ USE_ENTRY_MAX = 48
 USE_LINE_STEP = 18
 USE_TRUNC = 30
 
+#: Placeholder row when ``models`` is present but empty and sessions were served
+#: (spec §5) — shown instead of blank space, never as a zero.
+NO_MODEL_BREAKDOWN = "No model breakdown provided"
+
 #: Static note-line disclaimer (spec §5). The yml path is appended per call so
 #: the reader knows where the authoritative data lives.
 NOTE_DISCLAIMER = "Formatting only — this label does not verify the underlying data."
@@ -288,7 +292,21 @@ def _more_label(more: int, source_path: str) -> str | None:
 
 def _models(data: LlmFacts, source_path: str) -> Slot | None:
     models = data.models
-    if not models:  # ``None`` (absent) or ``[]`` (present-but-empty) → no rows
+    if models is None:  # section absent → omitted entirely (omission-vs-zero)
+        return None
+    if len(models) == 0:
+        # Present but empty: show a placeholder row only when sessions were
+        # served, otherwise there is nothing to place (spec §5).
+        sessions = data.summary.total_sessions if data.summary else None
+        if sessions and sessions > 0:
+            content = {
+                "rows": [],
+                "more": 0,
+                "more_label": None,
+                "placeholder": True,
+                "text": NO_MODEL_BREAKDOWN,
+            }
+            return Slot("models", MODEL_ROW, content=content)
         return None
     total = len(models)
     shown = min(total, MODELS_CAP)
