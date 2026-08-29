@@ -1,0 +1,22 @@
+{#-
+  label.svg.jinja — the SVG document structure for one label (spec §5, §7).
+
+  This template only *places* pre-computed elements: every coordinate, class,
+  and text string is resolved in llm_facts/render_svg.py. There is deliberately
+  no arithmetic here (spec §5) — the loops and conditionals below are control
+  flow only, never coordinate math.
+-#}
+<svg xmlns="http://www.w3.org/2000/svg" width="{{ width }}" height="{{ height }}" viewBox="{{ viewbox }}" role="img" aria-label="{{ aria_label }}">
+<style>{{ css }}</style>
+<rect class="bg" x="0" y="0" width="{{ width }}" height="{{ height }}"/>
+{% for slot in slots %}
+<g class="slot slot-{{ slot.kind }}">
+{% for r in slot.rules %}
+<line class="{{ r.cls }}" x1="{{ r.x1 }}" y1="{{ r.y1 }}" x2="{{ r.x2 }}" y2="{{ r.y2 }}"/>
+{% endfor %}
+{% for t in slot.texts %}
+<text class="{{ t.cls }}" x="{{ t.x }}" y="{{ t.y }}"{% if t.anchor %} text-anchor="{{ t.anchor }}"{% endif %}>{{ t.content }}</text>
+{% endfor %}
+</g>
+{% endfor %}
+</svg>
