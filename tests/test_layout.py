@@ -244,3 +244,102 @@ def test_minimal_yields_only_the_sections_it_populates() -> None:
 def test_absent_section_produces_no_zero_height_slot() -> None:
     layout = L.layout(_fixture("minimal"))
     assert all(s.height > 0 for s in layout.slots)
+
+
+# --- #10: capped list sections and "+N more" truncation ---------------------
+
+
+def test_models_within_cap_has_no_truncation_row() -> None:
+    # typical has 2 models (≤ 5): 22px each, no "+N more" row.
+    models = L.layout(_fixture("typical")).slot("models")
+    assert models is not None
+    assert models.height == L.MODEL_ROW * 2
+    assert models.content["more"] == 0
+    assert models.content["more_label"] is None
+
+
+def test_models_over_cap_truncates_with_visible_more_row() -> None:
+    # maxed has 6 models (cap 5): keep 5, append a "+1 more" row, add 16px.
+    models = L.layout(_fixture("maxed")).slot("models")
+    assert models is not None
+    assert len(models.content["rows"]) == L.MODELS_CAP
+    assert models.content["more"] == 1  # 6 − 5
+    assert models.height == L.MODEL_ROW * L.MODELS_CAP + L.MODELS_TRUNC
+    # The truncation is visible, never a silent drop (spec §9).
+    assert "+1 more" in models.content["more_label"]
+    assert ".llm-facts.yml" in models.content["more_label"]
+
+
+def test_verification_within_cap_has_no_truncation_row() -> None:
+    # typical has 2 tools (≤ 8).
+    ver = L.layout(_fixture("typical")).slot("verification")
+    assert ver is not None
+    assert ver.height == L.TOOL_ROW * 2
+    assert ver.content["more"] == 0
+
+
+def test_verification_over_cap_truncates_with_visible_more_row() -> None:
+    # maxed has 9 tools (cap 8): keep 8, "+1 more" row (spec §9).
+    ver = L.layout(_fixture("maxed")).slot("verification")
+    assert ver is not None
+    assert len(ver.content["rows"]) == L.TOOLS_CAP
+    assert ver.content["more"] == 1  # 9 − 8
+    assert ver.height == L.TOOL_ROW * L.TOOLS_CAP + L.TOOLS_TRUNC
+    assert "+1 more" in ver.content["more_label"]
+
+
+def test_verification_omitted_when_tools_absent() -> None:
+    # tools absent entirely → omit verification section (spec §6).
+    assert L.layout(_fixture("minimal")).slot("verification") is None
+
+
+def test_use_within_cap_has_no_truncation_row() -> None:
+    # typical has 3 short-note use entries (≤ 6), each a single 30px row.
+    use = L.layout(_fixture("typical")).slot("use")
+    assert use is not None
+    assert use.content["more"] == 0
+    assert all(row["height"] == L.USE_ENTRY_MIN for row in use.content["rows"])
+
+
+def test_use_over_cap_truncates_with_visible_more_row() -> None:
+    # maxed has 7 use entries (cap 6): keep 6, "+1 more" row (spec §9).
+    use = L.layout(_fixture("maxed")).slot("use")
+    assert use is not None
+    assert len(use.content["rows"]) == L.USE_CAP
+    assert use.content["more"] == 1  # 7 − 6
+    assert "+1 more" in use.content["more_label"]
+
+
+def test_use_entry_height_varies_with_note_length() -> None:
+    data = LlmFacts.model_validate(
+        {
+            "schema_version": 1,
+            "use": [
+                {"category": "tests", "note": "short"},
+                {"category": "docs", "note": "z" * 200},
+            ],
+        }
+    )
+    rows = L.layout(data).slot("use").content["rows"]
+    assert rows[0]["height"] == L.USE_ENTRY_MIN  # one line
+    assert rows[1]["height"] == L.USE_ENTRY_MAX  # wraps, capped at the max
+    assert rows[1]["height"] > rows[0]["height"]
+
+
+def test_out_of_enum_use_category_is_laid_out_as_given() -> None:
+    # An out-of-enum category is kept and laid out as given, never hard-failed
+    # (spec §3), consistent with the loader.
+    data = LlmFacts.model_validate(
+        {"schema_version": 1, "use": [{"category": "migration", "note": "x"}]}
+    )
+    use = L.layout(data).slot("use")
+    categories = [row["entry"].category for row in use.content["rows"]]
+    assert categories == ["migration"]
+
+
+def test_typical_stays_within_every_cap_with_no_truncation_row() -> None:
+    layout = L.layout(_fixture("typical"))
+    for kind in ("models", "verification", "use"):
+        slot = layout.slot(kind)
+        assert slot is not None
+        assert slot.content["more"] == 0
